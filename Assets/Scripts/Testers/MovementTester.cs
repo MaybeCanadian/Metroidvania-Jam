@@ -16,7 +16,8 @@ public class MovementTester : MonoBehaviour
 
     private void Start()
     {
-        movement = GetComponent<EntityMovement>();
+        if(movement == null)
+            movement = GetComponentInChildren<EntityMovement>();
 
         if (inputList.Count > 0)
         {

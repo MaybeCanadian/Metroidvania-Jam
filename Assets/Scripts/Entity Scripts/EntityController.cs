@@ -9,19 +9,14 @@ public class EntityController : MonoBehaviour
 
     private void Awake()
     {
-        anims = GetComponent<EntityAnims>();
-        movement = GetComponent<EntityMovement>();
+        if(anims == null)
+            anims = GetComponent<EntityAnims>();
+        if(movement == null)
+            movement = GetComponent<EntityMovement>();
     }
 
     private void LateUpdate()
     {
-        if(movement.velocity.magnitude > 0)
-        {
-            anims.GoToAnimState(AnimStates.WALK);
-        }
-        else
-        {
-            anims.GoToAnimState(AnimStates.IDLE);
-        }
+        
     }
 }

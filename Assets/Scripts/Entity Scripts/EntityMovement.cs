@@ -5,25 +5,22 @@ using UnityEngine;
 public class EntityMovement : MonoBehaviour
 {
     public Rigidbody2D rb;
+    public EntityAnims anims;
 
     [Header("Movement Values")]
     [Tooltip("The rate at which velocity is gained per second")]
-    public float moveSpeed = 10.0f;
-    [Tooltip("The Max speed in any direction of the entity")]
-    public float maxSpeed = 10.0f;
-    [Tooltip("The current velocity of the entity")]
-    public Vector2 velocity = Vector2.zero;
-    [Tooltip("The amount the velocity decays each frame")]
-    public float decay = 0.9f;
+    public float moveSpeed = 3.0f;
 
     public MovementUpdateTypes updateType = MovementUpdateTypes.FixedUpdate;
 
     //The value set from a controller goes here
     private Vector2 input = Vector2.zero;
-
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        if(rb == null)
+            rb = GetComponentInChildren<Rigidbody2D>();
+        if(anims == null)
+            anims = GetComponentInChildren<EntityAnims>();
 
         if(rb == null)
         {
@@ -85,50 +82,23 @@ public class EntityMovement : MonoBehaviour
     }
     private void MovementLoop(float delta)
     {
-        Accelerate(delta);
-
-        CapMoveSpeed();
-
         Move(delta);
-
-        ApplyDecay(delta);
 
         return;
     }
     #endregion
 
     #region Movement Loop
-    private void Accelerate(float delta)
-    {
-        velocity.x += input.x * moveSpeed * delta;
-
-        velocity.y += input.y * moveSpeed * delta;
-
-        return;
-    }
-    private void CapMoveSpeed()
-    {
-        if(velocity.magnitude > maxSpeed)
-        {
-            velocity = velocity.normalized * moveSpeed;
-        }
-    }
     private void Move(float delta)
     {
+        input = input.normalized;
+
         Vector3 newPos = transform.position;
 
-        newPos.x += velocity.x * delta;
-        newPos.y += velocity.y * delta;
+        newPos.x += input.x * moveSpeed * delta;
+        newPos.y += input.y * moveSpeed * delta;
 
         rb.MovePosition(newPos);
-    }
-    private void ApplyDecay(float delta)
-    {
-        //this should be modified to only happen when you are not pressing the button. I want snappy controls.
-
-        velocity *= decay;
-
-        return;
     }
     #endregion
 
@@ -143,6 +113,26 @@ public class EntityMovement : MonoBehaviour
         }
 
         return true;
+    }
+    #endregion
+
+    #region Animations
+    public void HandleMovementAnims()
+    {
+        if(anims == null)
+        {
+            Debug.LogError("ERROR - Entity movement could not find animation script. Ignoring animations");
+            return;
+        }
+
+        if(input.magnitude > 0)
+        {
+            anims.GoToAnimState(AnimStates.WALK);
+        }
+        else
+        {
+            anims.GoToAnimState(AnimStates.IDLE);
+        }
     }
     #endregion
 }

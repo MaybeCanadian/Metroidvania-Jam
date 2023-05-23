@@ -14,7 +14,8 @@ public class AnimsTester : MonoBehaviour
 
     private void Awake()
     {
-        anims = GetComponent<EntityAnims>();
+        if(anims == null)
+            anims = GetComponent<EntityAnims>();
 
         currentState = startState;
 
