@@ -3,17 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - GrappleHead
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
-  - 
+  - GrappleHead
+  - Walls
+  - GrappleTarget
   - 
   - 
   - 
@@ -46,6 +47,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1744655051
+    locked: 0
+  - name: Abilities
+    uniqueID: 2360907257
     locked: 0
   - name: Structures
     uniqueID: 647223243

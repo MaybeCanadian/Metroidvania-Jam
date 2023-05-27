@@ -20,23 +20,23 @@ public class GrappleHead : MonoBehaviour
     LayerMask stopLayer;
     LayerMask grappleLayer;
 
-    private void Start()
-    {
-        active = false;
-    }
-    public void FireHook(float speed, float range, Vector3 direction, GrappleHook hookBase, LayerMask grappleStopLayer, LayerMask grappleGrappleLayer)
-    {
-        transform.position = hookBase.transform.position;
+    Vector3 moveDirection;
 
-        this.speed= speed;
+    public void SetUpHook(float speed, float range, Vector3 direction, GrappleHook hookBase, LayerMask grappleStopLayer, LayerMask grappleGrappleLayer)
+    {
+        this.speed = speed;
         this.range = range;
 
-        transform.localEulerAngles = direction;
+        moveDirection = direction;
 
         this.hookBase = hookBase;
 
         this.stopLayer = grappleStopLayer;
         this.grappleLayer = grappleGrappleLayer;
+    }
+    public void FireHook(Vector3 pos)
+    {
+        transform.position = pos;
 
         active = true;
     }
@@ -57,7 +57,7 @@ public class GrappleHead : MonoBehaviour
 
     private void MoveHook(float delta)
     {
-        transform.position += transform.forward * speed * delta;
+        transform.position += moveDirection.normalized * speed * delta;
     }
     private void CheckRange()
     {
@@ -66,6 +66,7 @@ public class GrappleHead : MonoBehaviour
         if (dist > range)
         {
             active = false;
+            hookBase.GrappleAtMaxRange();
         }
     }
     private void CheckCollisions()
@@ -75,8 +76,6 @@ public class GrappleHead : MonoBehaviour
         if(stopCol != null)
         {
             active = false;
-            Debug.Log("Wall");
-
             hookBase.GrappleHitWall();
         }
 
@@ -85,8 +84,6 @@ public class GrappleHead : MonoBehaviour
         if(grappleCol != null)
         {
             active = false;
-            Debug.Log("Grapple");
-
             hookBase.GrappleHitGrappleOBJ();
         }
     }

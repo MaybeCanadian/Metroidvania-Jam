@@ -18,6 +18,12 @@ public class GrappleHook : MonoBehaviour
     private GameObject hookOBJ;
     private GrappleHead headScript;
 
+    public PlayerAiming aim;
+    private void Awake()
+    {
+        if(aim == null)
+            aim = GetComponentInChildren<PlayerAiming>();
+    }
     private void Start()
     {
         SetUpHook();
@@ -35,6 +41,8 @@ public class GrappleHook : MonoBehaviour
             return;
         }
 
+        headScript.SetUpHook(grappleSpeed, grappleRange, aim.direction, this, grappleStopLayer, grappleGrappleLayer);
+
         hookOBJ.SetActive(false);
     }
 
@@ -50,16 +58,25 @@ public class GrappleHook : MonoBehaviour
     {
         hookOBJ.SetActive(true);
 
-        headScript.FireHook(grappleSpeed, grappleRange, Vector3.left, this, grappleStopLayer, grappleGrappleLayer);
+        headScript.SetUpHook(grappleSpeed, grappleRange, aim.direction, this, grappleStopLayer, grappleGrappleLayer);
+
+        headScript.FireHook(transform.position);
     }
 
     public void GrappleHitWall()
     {
         hookOBJ.SetActive(false);
+        Debug.Log("Wall");
     }
 
     public void GrappleHitGrappleOBJ()
     {
-        
+        Debug.Log("Grapple");
+    }
+
+    public void GrappleAtMaxRange()
+    {
+        hookOBJ.SetActive(false);
+        Debug.Log("Range");
     }
 }
