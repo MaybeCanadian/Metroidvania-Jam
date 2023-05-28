@@ -22,6 +22,7 @@ public class GrappleHead : MonoBehaviour
 
     Vector3 moveDirection;
 
+    #region Set Up
     public void SetUpHook(float speed, float range, Vector3 direction, GrappleHook hookBase, LayerMask grappleStopLayer, LayerMask grappleGrappleLayer)
     {
         this.speed = speed;
@@ -40,7 +41,9 @@ public class GrappleHead : MonoBehaviour
 
         active = true;
     }
+    #endregion
 
+    #region Movement
     public void FixedUpdate()
     {
         if (active == false)
@@ -54,7 +57,6 @@ public class GrappleHead : MonoBehaviour
 
         CheckRange();
     }
-
     private void MoveHook(float delta)
     {
         transform.position += moveDirection.normalized * speed * delta;
@@ -87,4 +89,5 @@ public class GrappleHead : MonoBehaviour
             hookBase.GrappleHitGrappleOBJ();
         }
     }
+    #endregion
 }
