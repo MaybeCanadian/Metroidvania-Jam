@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 5331775438220850860}
   - component: {fileID: 5331775438220850851}
   - component: {fileID: 5331775438220850850}
-  - component: {fileID: 5331775438220850848}
-  - component: {fileID: 5331775438220850862}
   m_Layer: 0
   m_Name: Player Sprite
   m_TagString: Untagged
@@ -107,35 +105,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!114 &5331775438220850848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5331775438220850853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99b43277560ccd54485850f67dccef55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startingAnim: 0
-  currentAnim: 0
-  anims: {fileID: 0}
-  animParamName: Anim
---- !u!114 &5331775438220850862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5331775438220850853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 602cd127c35084049bac421e31c5e04f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sr: {fileID: 0}
 --- !u!1 &5331775438296155209
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,9 +116,7 @@ GameObject:
   - component: {fileID: 5331775438296155255}
   - component: {fileID: 5331775438296155254}
   - component: {fileID: 5331775438296155253}
-  - component: {fileID: 5331775438296155252}
-  - component: {fileID: 5331775438296155211}
-  - component: {fileID: 5331775438296155210}
+  - component: {fileID: 1837154133493797119}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -199,7 +166,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &5331775438296155253
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -245,7 +212,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.39276546, y: 0.26372814}
   m_EdgeRadius: 0
---- !u!114 &5331775438296155252
+--- !u!114 &1837154133493797119
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -254,39 +221,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5331775438296155209}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98bba580c490585489714ec8f8ce81d9, type: 3}
+  m_Script: {fileID: 11500000, guid: 1d59020a25d161145a636790a8a0efa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anims: {fileID: 5331775438220850848}
-  movement: {fileID: 5331775438296155210}
-  direction: {fileID: 5331775438220850862}
-  aiming: {fileID: 5331775438296155211}
---- !u!114 &5331775438296155211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5331775438296155209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2f21799b2d19b840bd1a589c034c5b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  direction: {x: 0, y: 0, z: 0}
---- !u!114 &5331775438296155210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5331775438296155209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38225c1a532184b4db8de29130d88603, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb: {fileID: 0}
-  anims: {fileID: 0}
-  moveSpeed: 3
-  updateType: 1
+  inputPollingUpdateType: 0
+  currentInputType: 0
+  currentMovementInput: {x: 0, y: 0}
+  pollMovementInput: 1
+  pollDirectionalInput: 1
+  movementUpdateType: 1
+  moveSpeed: 5
+  animationUpdateType: 2
+  animationParamter: AnimState
