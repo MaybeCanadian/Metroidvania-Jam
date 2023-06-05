@@ -281,7 +281,9 @@ public class PlayerController : MonoBehaviour
     }
     private void PlayerBasicMove(float delta)
     {
-        
+        Vector2 moveValue = currentMovementInput.normalized * moveSpeed * delta;
+
+        rb.MovePosition(transform.position + (Vector3)moveValue);
     }
     #endregion
 
