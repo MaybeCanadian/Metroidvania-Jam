@@ -4420,45 +4420,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &888280162 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5331775438296155209, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
-  m_PrefabInstance: {fileID: 5331775438752986900}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &888280163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 888280162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2ba80708aba564409bb2b30a5081688, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grappleRange: 5
-  grappleSpeed: 15
-  hooked: 0
-  grappleStopLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  grappleGrappleLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  grappleHeadPrefab: {fileID: 3157705254306975008, guid: d94c589c19932234f801405b8872dd74, type: 3}
-  aim: {fileID: 888280165}
---- !u!114 &888280165 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5331775438296155211, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
-  m_PrefabInstance: {fileID: 5331775438752986900}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 888280162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2f21799b2d19b840bd1a589c034c5b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1386300586
 GameObject:
   m_ObjectHideFlags: 0
@@ -4643,6 +4604,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1837154133493797119, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
+      propertyPath: animationParamter
+      value: Anim
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837154133493797119, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
+      propertyPath: movementUpdateType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5331775438296155209, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
       propertyPath: m_Name
       value: Player
@@ -4698,8 +4667,5 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5331775438296155209, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 888280163}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}

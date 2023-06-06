@@ -71,6 +71,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField, Tooltip("The name of the parameter the animator is checking for.")]
     private string animationParamter = "AnimState";
+
+    [SerializeField, Tooltip("Is the player currently moving?")]
+    private bool isMoving = false;
     #endregion
 
     #endregion
@@ -284,6 +287,8 @@ public class PlayerController : MonoBehaviour
         Vector2 moveValue = currentMovementInput.normalized * moveSpeed * delta;
 
         rb.MovePosition(transform.position + (Vector3)moveValue);
+
+        isMoving = (moveValue.magnitude > 0);
     }
     #endregion
 
@@ -292,7 +297,13 @@ public class PlayerController : MonoBehaviour
     #region Animations
     private void AnimationUpdate(float delta)
     {
+        if(isMoving)
+        {
+            anims.SetInteger(animationParamter, (int)AnimStates.Moving);
+            return;
+        }
 
+        anims.SetInteger(animationParamter, (int)AnimStates.Idle);
     }
     #endregion
 
@@ -312,5 +323,10 @@ public enum InputTypes
 {
     KeyboardAndMouse,
     Controller
+}
+public enum AnimStates
+{
+    Idle,
+    Moving,
 }
 #endregion
