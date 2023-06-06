@@ -74,6 +74,13 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField, Tooltip("Is the player currently moving?")]
     private bool isMoving = false;
+
+    [Header("Sprite Flip")]
+    [SerializeField]
+    private SpriteDirections spriteDirection = SpriteDirections.Right;
+    private SpriteDirections lastSpriteDirection;
+    private GameObject playerSpriteOBJ;
+    private Vector3 startingScale;
     #endregion
 
     #endregion
@@ -85,7 +92,11 @@ public class PlayerController : MonoBehaviour
     {
         currentMovementInput = Vector2.zero;
 
+        lastSpriteDirection = spriteDirection;
+
         ConnectComponents();
+
+        SetUpPlayerSpriteOBJ();
     }
     private void ConnectComponents()
     {
@@ -137,6 +148,19 @@ public class PlayerController : MonoBehaviour
         }
 
         Debug.LogError("ERRIR - Could not locate an animator in the player.");
+        return;
+    }
+    private void SetUpPlayerSpriteOBJ()
+    {
+        if(anims == null)
+        {
+            Debug.LogError("ERROR - Could not get player sprite obj as anims is null.");
+            return;
+        }
+            
+        playerSpriteOBJ = anims.gameObject;
+        startingScale = playerSpriteOBJ.transform.localScale;
+
         return;
     }
     #endregion
@@ -289,6 +313,15 @@ public class PlayerController : MonoBehaviour
         rb.MovePosition(transform.position + (Vector3)moveValue);
 
         isMoving = (moveValue.magnitude > 0);
+
+        if(currentMovementInput.x < 0)
+        {
+            spriteDirection = SpriteDirections.Left;
+        }
+        else if(currentMovementInput.x > 0)
+        {
+            spriteDirection = SpriteDirections.Right;
+        }
     }
     #endregion
 
@@ -297,13 +330,33 @@ public class PlayerController : MonoBehaviour
     #region Animations
     private void AnimationUpdate(float delta)
     {
-        if(isMoving)
+        DetermineAnimState(delta);
+
+        FlipSprite(delta);
+    }
+    private void DetermineAnimState(float Delta)
+    {
+        if (isMoving)
         {
             anims.SetInteger(animationParamter, (int)AnimStates.Moving);
             return;
         }
 
         anims.SetInteger(animationParamter, (int)AnimStates.Idle);
+    }
+    private void FlipSprite(float delta)
+    {
+        if(lastSpriteDirection == spriteDirection)
+        {
+            return;
+        }
+
+        lastSpriteDirection = spriteDirection;
+
+        playerSpriteOBJ.transform.localScale = 
+            new Vector3(playerSpriteOBJ.transform.localScale.x * -1.0f, playerSpriteOBJ.transform.localScale.y, playerSpriteOBJ.transform.localScale.z);
+
+        return;
     }
     #endregion
 
@@ -324,9 +377,16 @@ public enum InputTypes
     KeyboardAndMouse,
     Controller
 }
+[System.Serializable]
 public enum AnimStates
 {
     Idle,
     Moving,
+}
+[System.Serializable]
+public enum SpriteDirections
+{
+    Left,
+    Right
 }
 #endregion
