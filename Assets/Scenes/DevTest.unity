@@ -4604,21 +4604,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1837154133493797119, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
-      propertyPath: animationParamter
-      value: Anim
-      objectReference: {fileID: 0}
-    - target: {fileID: 1837154133493797119, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
-      propertyPath: movementUpdateType
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5331775438296155209, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 5331775438296155254, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
-      propertyPath: m_Constraints
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5331775438296155255, guid: 2bdacba6023115a438578bbdf382c4cb, type: 3}
       propertyPath: m_RootOrder

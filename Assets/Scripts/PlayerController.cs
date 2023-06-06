@@ -42,17 +42,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("The current active input type to be checked for.")]
     private InputTypes currentInputType = InputTypes.KeyboardAndMouse;
 
+    [Header("Movement Inputs")]
     [SerializeField, Tooltip("The current recorded input for movement, this is not normalized.")]
     private Vector2 currentMovementInput = Vector2.zero;
-    [SerializeField, Tooltip("The current recorded input for movement, this is not normalized")]
-    private Vector2 currentDirectionalInput = Vector2.zero;
-
     [SerializeField, Tooltip("Should the movement inputs be checked")]
     private bool pollMovementInput = true;
+
+    [Header("Directional Inputs")]
+    [SerializeField, Tooltip("The current recorded input for movement, this is not normalized")]
+    private Vector2 currentDirectionalInput = Vector2.zero;
     [SerializeField, Tooltip("Should the mouse inputs me checked")]
     private bool pollDirectionalInput = true;
 
+    [Header("Button Inputs")]
+    [SerializeField, Tooltip("Should Button Inputs be checked?")]
+    private bool pollButtonInputs = true;
 
+    [SerializeField]
+    private bool pollDashInputs = true;
+    [SerializeField, Tooltip("The keyboard key assigned to dash")]
+    private KeyCode dashKeyboardKey = KeyCode.LeftShift;
     #endregion
 
     #region Movements
@@ -79,8 +88,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private SpriteDirections spriteDirection = SpriteDirections.Right;
     private SpriteDirections lastSpriteDirection;
+
+    [SerializeField]
+    private bool doSpriteFlip = true;
+
     private GameObject playerSpriteOBJ;
-    private Vector3 startingScale;
     #endregion
 
     #endregion
@@ -159,8 +171,6 @@ public class PlayerController : MonoBehaviour
         }
             
         playerSpriteOBJ = anims.gameObject;
-        startingScale = playerSpriteOBJ.transform.localScale;
-
         return;
     }
     #endregion
@@ -241,6 +251,11 @@ public class PlayerController : MonoBehaviour
         {
             PollDirectionalInput(delta);
         }
+
+        if(pollButtonInputs)
+        {
+            PollButtonInputs(delta);
+        }
     }
 
     #region Movement Inputs
@@ -297,6 +312,54 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    #region Button Inputs
+    private void PollButtonInputs(float delta)
+    {
+        if(currentInputType == InputTypes.KeyboardAndMouse)
+        {
+            PollKeyboardButtonInputs(delta);
+            return;
+        }
+
+        if(currentInputType == InputTypes.Controller)
+        {
+            PollControllerButtonInputs(delta);
+            return;
+        }
+
+        return;
+    }
+
+    #region Keyboard
+    private void PollKeyboardButtonInputs(float delta)
+    {
+        if(pollDashInputs == true)
+        {
+            PollDashKeyboardInputs(delta);
+        }
+
+        return;
+    }
+    private void PollDashKeyboardInputs(float delta)
+    {
+
+    }
+    #endregion
+
+    #region Controller
+    private void PollControllerButtonInputs(float delta)
+    {
+        if(pollDashInputs)
+        {
+            PollDashControllerInputs(delta);
+        }
+    }
+    private void PollDashControllerInputs(float delta)
+    {
+        //check for the controller input here
+    }
+    #endregion
+
     #endregion
 
     //------------------------------
@@ -346,11 +409,16 @@ public class PlayerController : MonoBehaviour
     }
     private void FlipSprite(float delta)
     {
-        if(lastSpriteDirection == spriteDirection)
+        if (doSpriteFlip == false)
         {
             return;
         }
 
+        if (lastSpriteDirection == spriteDirection)
+        {
+            return;
+        }
+        
         lastSpriteDirection = spriteDirection;
 
         playerSpriteOBJ.transform.localScale = 

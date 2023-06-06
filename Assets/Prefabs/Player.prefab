@@ -224,12 +224,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d59020a25d161145a636790a8a0efa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 0}
+  findRigidBodyIfNull: 1
+  checkChildForRigidBody: 1
+  anims: {fileID: 0}
+  findAnimsIfNull: 1
+  checkChildForAnims: 1
   inputPollingUpdateType: 0
   currentInputType: 0
   currentMovementInput: {x: 0, y: 0}
+  currentDirectionalInput: {x: 0, y: 0}
   pollMovementInput: 1
   pollDirectionalInput: 1
   movementUpdateType: 1
   moveSpeed: 5
   animationUpdateType: 2
-  animationParamter: AnimState
+  animationParamter: Anim
+  isMoving: 0
+  spriteDirection: 1
+  doSpriteFlip: 1
