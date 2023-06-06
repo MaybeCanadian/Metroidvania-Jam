@@ -58,10 +58,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Should Button Inputs be checked?")]
     private bool pollButtonInputs = true;
 
+    [Header("Dash Inputs")]
     [SerializeField]
     private bool pollDashInputs = true;
     [SerializeField, Tooltip("The keyboard key assigned to dash")]
     private KeyCode dashKeyboardKey = KeyCode.LeftShift;
+    [SerializeField, Tooltip("The controller button assigned to dash")]
+    private string dashControllerBinding = "Left Bumper";
+
+    [Header("Attack Inputs")]
+    [SerializeField]
+    private bool pollAttackInputs = true;
     #endregion
 
     #region Movements
@@ -342,7 +349,25 @@ public class PlayerController : MonoBehaviour
     }
     private void PollDashKeyboardInputs(float delta)
     {
+        if(Input.GetKeyDown(dashKeyboardKey))
+        {
+            OnDashInput(ButtonContext.Started);
+            return;
+        }
 
+        if (Input.GetKeyUp(dashKeyboardKey))
+        {
+            OnDashInput(ButtonContext.Cancelled);
+            return;
+        }
+
+        if (Input.GetKey(dashKeyboardKey))
+        {
+            OnDashInput(ButtonContext.Held);
+            return;
+        }
+
+        return;
     }
     #endregion
 
@@ -358,6 +383,8 @@ public class PlayerController : MonoBehaviour
     {
         //check for the controller input here
     }
+    #endregion
+
     #endregion
 
     #endregion
@@ -385,6 +412,20 @@ public class PlayerController : MonoBehaviour
         {
             spriteDirection = SpriteDirections.Right;
         }
+    }
+    #endregion
+
+    //------------------------------
+
+    #region Button Events
+    private void OnDashInput(ButtonContext context)
+    {
+        if(context != ButtonContext.Started)
+        {
+            return;
+        }
+
+        Debug.Log("Dash");
     }
     #endregion
 
@@ -456,5 +497,12 @@ public enum SpriteDirections
 {
     Left,
     Right
+}
+public enum ButtonContext
+{
+    None,
+    Started,
+    Held,
+    Cancelled
 }
 #endregion
