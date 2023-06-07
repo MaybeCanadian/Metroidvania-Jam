@@ -33,24 +33,39 @@ public class PlayerController : MonoBehaviour
     private bool findAnimsIfNull = true;
     [SerializeField, Tooltip("Should the controller check inside the children for the Animator")]
     private bool checkChildForAnims = true;
+
+    [SerializeField, Tooltip("The connected Sprite Renderer")]
+    private SpriteRenderer sr;
+    [SerializeField, Tooltip("Should the controller try and find a connected Sprite Renderer in the object.")]
+    private bool findSpriteRendererIfNull = true;
+    [SerializeField, Tooltip("Should the controller check inside the children for the Sprite Renderer")]
+    private bool checkChildForSpriteRenderer = true;
+
+    private Camera mainCamera;
+
+    private GameObject playerSpriteOBJ;
     #endregion
 
     #region Inputs
     [Header("Inputs")]
     [SerializeField, Tooltip("The update cycle that inputs will be polled in.")]
-    private UpdateTypes inputPollingUpdateType = UpdateTypes.Update;
+    private PlayerUpdateTypes inputPollingUpdateType = PlayerUpdateTypes.Update;
     [SerializeField, Tooltip("The current active input type to be checked for.")]
-    private InputTypes currentInputType = InputTypes.KeyboardAndMouse;
+    private PlayerInputTypes currentInputType = PlayerInputTypes.KeyboardAndMouse;
 
     [Header("Movement Inputs")]
-    [SerializeField, Tooltip("The current recorded input for movement, this is not normalized.")]
-    private Vector2 currentMovementInput = Vector2.zero;
+    [SerializeField, Tooltip("The raw movement Input")]
+    private Vector2 rawMovementInput = Vector2.zero;
+    [SerializeField, Tooltip("The normalized Movement Input")]
+    private Vector2 normalizedMovementInput = Vector2.zero;
     [SerializeField, Tooltip("Should the movement inputs be checked")]
     private bool pollMovementInput = true;
 
     [Header("Directional Inputs")]
-    [SerializeField, Tooltip("The current recorded input for movement, this is not normalized")]
-    private Vector2 currentDirectionalInput = Vector2.zero;
+    [SerializeField, Tooltip("The raw Directional Input")]
+    private Vector2 rawDirectionalInput = Vector2.zero;
+    [SerializeField, Tooltip("The normalized Directional Input")]
+    private Vector2 normalizedDirectionalInput = Vector2.zero;
     [SerializeField, Tooltip("Should the mouse inputs me checked")]
     private bool pollDirectionalInput = true;
 
@@ -74,16 +89,18 @@ public class PlayerController : MonoBehaviour
     #region Movements
     [Header("Movement")]
     [SerializeField, Tooltip("The update cycle that movement will occur in.")]
-    private UpdateTypes movementUpdateType = UpdateTypes.FixedUpdate;
+    private PlayerUpdateTypes movementUpdateType = PlayerUpdateTypes.FixedUpdate;
 
     [SerializeField, Tooltip("How fast the player will move when input is pressed.")]
     private float moveSpeed = 5.0f;
+    [SerializeField]
+    private float walkSpeed = 5.0f;
     #endregion
 
     #region Animations
     [Header("Animations")]
     [SerializeField, Tooltip("The update cycle the animations will be updated in.")]
-    private UpdateTypes animationUpdateType = UpdateTypes.LateUpdate;
+    private PlayerUpdateTypes animationUpdateType = PlayerUpdateTypes.LateUpdate;
 
     [SerializeField, Tooltip("The name of the parameter the animator is checking for.")]
     private string animationParamter = "AnimState";
@@ -93,13 +110,18 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sprite Flip")]
     [SerializeField]
-    private SpriteDirections spriteDirection = SpriteDirections.Right;
-    private SpriteDirections lastSpriteDirection;
+    private PlayerSpriteDirections transformDirection = PlayerSpriteDirections.Right;
+    private PlayerSpriteDirections lastTransformDirection;
+
+    [SerializeField]
+    private bool doTransformFlip = true;
+
+    [SerializeField]
+    private PlayerSpriteDirections spriteDirection = PlayerSpriteDirections.Right;
+    private PlayerSpriteDirections lastSpriteDirection;
 
     [SerializeField]
     private bool doSpriteFlip = true;
-
-    private GameObject playerSpriteOBJ;
     #endregion
 
     #endregion
@@ -109,9 +131,13 @@ public class PlayerController : MonoBehaviour
     #region Init Functions
     private void Start()
     {
-        currentMovementInput = Vector2.zero;
+        rawMovementInput = Vector2.zero;
+
+        lastTransformDirection = transformDirection;
 
         lastSpriteDirection = spriteDirection;
+
+        mainCamera = Camera.main;
 
         ConnectComponents();
 
@@ -122,6 +148,8 @@ public class PlayerController : MonoBehaviour
         ConnectRB();
 
         ConnectAnims();
+
+        ConnectSR();
     }
     private void ConnectRB()
     {
@@ -169,6 +197,29 @@ public class PlayerController : MonoBehaviour
         Debug.LogError("ERRIR - Could not locate an animator in the player.");
         return;
     }
+    private void ConnectSR()
+    {
+        if(sr != null)
+        {
+            return;
+        }
+
+        if(findSpriteRendererIfNull == false)
+        {
+            Debug.LogError("ERROR - Sprite Renderer for player is null.");
+            return;
+        }
+
+        sr = (checkChildForSpriteRenderer == true) ? GetComponentInChildren<SpriteRenderer>() : GetComponent<SpriteRenderer>();
+
+        if(sr != null)
+        {
+            return;
+        }
+
+        Debug.LogError("ERROR - Could not locate a Sprite Renderer in the player.");
+        return;
+    }
     private void SetUpPlayerSpriteOBJ()
     {
         if(anims == null)
@@ -189,17 +240,17 @@ public class PlayerController : MonoBehaviour
     {
         float delta = Time.deltaTime;
 
-        if (inputPollingUpdateType == UpdateTypes.Update)
+        if (inputPollingUpdateType == PlayerUpdateTypes.Update)
         {
             InputPollingUpate(delta);
         }
 
-        if (movementUpdateType == UpdateTypes.Update)
+        if (movementUpdateType == PlayerUpdateTypes.Update)
         {
             MovementUpdate(delta);
         }
 
-        if (animationUpdateType == UpdateTypes.Update)
+        if (animationUpdateType == PlayerUpdateTypes.Update)
         {
             AnimationUpdate(delta);
         }
@@ -208,17 +259,17 @@ public class PlayerController : MonoBehaviour
     {
         float delta = Time.fixedDeltaTime;
 
-        if (inputPollingUpdateType == UpdateTypes.FixedUpdate)
+        if (inputPollingUpdateType == PlayerUpdateTypes.FixedUpdate)
         {
             InputPollingUpate(delta);
         }
 
-        if (movementUpdateType == UpdateTypes.FixedUpdate)
+        if (movementUpdateType == PlayerUpdateTypes.FixedUpdate)
         {
             MovementUpdate(delta);
         }
 
-        if (animationUpdateType == UpdateTypes.FixedUpdate)
+        if (animationUpdateType == PlayerUpdateTypes.FixedUpdate)
         {
             AnimationUpdate(delta);
         }
@@ -227,17 +278,17 @@ public class PlayerController : MonoBehaviour
     {
         float delta = Time.deltaTime;
 
-        if (inputPollingUpdateType == UpdateTypes.LateUpdate)
+        if (inputPollingUpdateType == PlayerUpdateTypes.LateUpdate)
         {
             InputPollingUpate(delta);
         }
 
-        if (movementUpdateType == UpdateTypes.LateUpdate)
+        if (movementUpdateType == PlayerUpdateTypes.LateUpdate)
         {
             MovementUpdate(delta);
         }
 
-        if (animationUpdateType == UpdateTypes.LateUpdate)
+        if (animationUpdateType == PlayerUpdateTypes.LateUpdate)
         {
             AnimationUpdate(delta);
         }
@@ -268,13 +319,13 @@ public class PlayerController : MonoBehaviour
     #region Movement Inputs
     private void PollMovementInput(float delta)
     {
-        if (currentInputType == InputTypes.KeyboardAndMouse)
+        if (currentInputType == PlayerInputTypes.KeyboardAndMouse)
         {
             PollKeyboardMovementInput(delta);
             return;
         }
 
-        if(currentInputType == InputTypes.Controller)
+        if(currentInputType == PlayerInputTypes.Controller)
         {
             PollControllerMovementInput(delta); 
             return;
@@ -285,8 +336,10 @@ public class PlayerController : MonoBehaviour
     }
     private void PollKeyboardMovementInput(float delta)
     {
-        currentMovementInput.x = Input.GetAxisRaw("Horizontal");
-        currentMovementInput.y = Input.GetAxisRaw("Vertical");
+        rawMovementInput.x = Input.GetAxisRaw("Horizontal");
+        rawMovementInput.y = Input.GetAxisRaw("Vertical");
+
+        normalizedMovementInput = rawMovementInput.normalized;
     }
     private void PollControllerMovementInput(float delta)
     {
@@ -297,13 +350,13 @@ public class PlayerController : MonoBehaviour
     #region Directional Inputs
     private void PollDirectionalInput(float delta)
     {
-        if(currentInputType == InputTypes.KeyboardAndMouse)
+        if(currentInputType == PlayerInputTypes.KeyboardAndMouse)
         {
             PollMouseDirectionalInput(delta);
             return;
         }
 
-        if(currentInputType == InputTypes.Controller)
+        if(currentInputType == PlayerInputTypes.Controller)
         {
             PollControllerDirectionalInput(delta);
             return;
@@ -311,7 +364,17 @@ public class PlayerController : MonoBehaviour
     }
     private void PollMouseDirectionalInput(float delta)
     {
+        Vector2 mousePos = Input.mousePosition;
 
+        Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mousePos);
+
+        Vector3 direction = mouseWorldPos - transform.position;
+
+        direction.z = 0;
+
+        rawDirectionalInput = direction;
+
+        normalizedDirectionalInput = rawDirectionalInput.normalized;
     }
     private void PollControllerDirectionalInput(float delta)
     {
@@ -322,13 +385,13 @@ public class PlayerController : MonoBehaviour
     #region Button Inputs
     private void PollButtonInputs(float delta)
     {
-        if(currentInputType == InputTypes.KeyboardAndMouse)
+        if(currentInputType == PlayerInputTypes.KeyboardAndMouse)
         {
             PollKeyboardButtonInputs(delta);
             return;
         }
 
-        if(currentInputType == InputTypes.Controller)
+        if(currentInputType == PlayerInputTypes.Controller)
         {
             PollControllerButtonInputs(delta);
             return;
@@ -395,24 +458,68 @@ public class PlayerController : MonoBehaviour
     private void MovementUpdate(float delta)
     {
         PlayerBasicMove(delta);
+
+        CheckDirections(delta);
     }
     private void PlayerBasicMove(float delta)
     {
-        Vector2 moveValue = currentMovementInput.normalized * moveSpeed * delta;
+        Vector2 moveValue = normalizedMovementInput * moveSpeed * delta;
 
         rb.MovePosition(transform.position + (Vector3)moveValue);
 
         isMoving = (moveValue.magnitude > 0);
 
-        if(currentMovementInput.x < 0)
+        if(rawMovementInput.x < 0)
         {
-            spriteDirection = SpriteDirections.Left;
+            transformDirection = PlayerSpriteDirections.Left;
         }
-        else if(currentMovementInput.x > 0)
+        else if(rawMovementInput.x > 0)
         {
-            spriteDirection = SpriteDirections.Right;
+            transformDirection = PlayerSpriteDirections.Right;
         }
     }
+
+    #region Directions
+    private void CheckDirections(float delta)
+    {
+        PlayerTransformDirectionCheck(delta);
+
+        PlayerSpriteDirectionCheck(delta);
+    }
+    private void PlayerTransformDirectionCheck(float delta)
+    {
+        if (rawMovementInput.x < 0)
+        {
+            transformDirection = PlayerSpriteDirections.Left;
+            return;
+        }
+
+        if (rawMovementInput.x > 0)
+        {
+            transformDirection = PlayerSpriteDirections.Right;
+            return;
+        }
+
+        return;
+    }
+    private void PlayerSpriteDirectionCheck(float delta)
+    {
+        if (rawDirectionalInput.x > 0)
+        {
+            spriteDirection = PlayerSpriteDirections.Right;
+            return;
+        }
+
+        if (rawDirectionalInput.x < 0)
+        {
+            spriteDirection = PlayerSpriteDirections.Left;
+            return;
+        }
+
+        return;
+    }
+    #endregion
+
     #endregion
 
     //------------------------------
@@ -436,37 +543,64 @@ public class PlayerController : MonoBehaviour
     {
         DetermineAnimState(delta);
 
+        FlipTransform(delta);
+
         FlipSprite(delta);
     }
     private void DetermineAnimState(float Delta)
     {
         if (isMoving)
         {
-            anims.SetInteger(animationParamter, (int)AnimStates.Moving);
+            anims.SetInteger(animationParamter, (int)PlayerAnimStates.Moving);
             return;
         }
 
-        anims.SetInteger(animationParamter, (int)AnimStates.Idle);
+        anims.SetInteger(animationParamter, (int)PlayerAnimStates.Idle);
     }
-    private void FlipSprite(float delta)
+
+    #region Flips
+    private void FlipTransform(float delta)
     {
-        if (doSpriteFlip == false)
+        if (doTransformFlip == false)
         {
             return;
         }
 
-        if (lastSpriteDirection == spriteDirection)
+        if (lastTransformDirection == transformDirection)
+        {
+            return;
+        }
+
+        if(playerSpriteOBJ == null)
         {
             return;
         }
         
-        lastSpriteDirection = spriteDirection;
+        lastTransformDirection = transformDirection;
 
         playerSpriteOBJ.transform.localScale = 
             new Vector3(playerSpriteOBJ.transform.localScale.x * -1.0f, playerSpriteOBJ.transform.localScale.y, playerSpriteOBJ.transform.localScale.z);
 
         return;
     }
+    private void FlipSprite(float delta)
+    {
+        if(doSpriteFlip == false)
+        {
+            return;
+        }
+
+        if (sr == null)
+        {
+            return;
+        }
+
+        sr.flipX = !(transformDirection == spriteDirection);
+
+        return;
+    }
+    #endregion
+
     #endregion
 
     //------------------------------
@@ -474,26 +608,26 @@ public class PlayerController : MonoBehaviour
 
 #region Enums
 [System.Serializable]
-public enum UpdateTypes
+public enum PlayerUpdateTypes
 {
     Update,
     FixedUpdate,
     LateUpdate
 }
 [System.Serializable]
-public enum InputTypes
+public enum PlayerInputTypes
 {
     KeyboardAndMouse,
     Controller
 }
 [System.Serializable]
-public enum AnimStates
+public enum PlayerAnimStates
 {
     Idle,
     Moving,
 }
 [System.Serializable]
-public enum SpriteDirections
+public enum PlayerSpriteDirections
 {
     Left,
     Right
